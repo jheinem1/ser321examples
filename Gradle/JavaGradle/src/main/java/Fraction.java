@@ -46,8 +46,12 @@ public class Fraction {
          // check for correct number of arguments
          if (args.length == 2) {
             // get the values from the command line
-            numerator = Integer.parseInt(args[0]);
-            denominator = Integer.parseInt(args[1]);
+            try {
+               numerator = Integer.parseInt(args[0]);
+            } catch (Exception e) { } // do nothing, use default
+            try {
+               denominator = Integer.parseInt(args[1]);
+            } catch (Exception e) { } // do nothing, use default
          }
 
 
