@@ -55,21 +55,6 @@ task runFraction(type: JavaExec) {
   main = 'Fraction'
 }
 
-// Try:
-// 1. Change Fraction.main so it accepts 2 arguments
-// 2. Create a new gradle tasks that accepts two arguments and 
-//    can be called as: gradle runFrac -Pdenom=4 -Pnum=3 or as gradle runFrac -Pnum=3 -Pdenom=4 , also make sure it can run with only 1 or no arguments
-
-// Example how you can add that libraries can be pulled from mavenCentral()
-// repositories {
-//   mavenCentral()
-// }
-
-// Setting dependencies, e.g. when you import JSON in your Java files
-// dependencies{
-//   implementation 'org.json:json:20171018'
-// }
-
 // task that runs the Fraction Main which does use arguments: gradle runFractionWithArgs -Pdenom=4 -Pnum=3
 task runFractionWithArgs(type: JavaExec) {
   group 'Fraction Tasks'
@@ -96,3 +81,18 @@ task runFractionWithArgs(type: JavaExec) {
 task runFrac() {
   dependsOn runFractionWithArgs
 }
+
+// Try:
+// 1. Change Fraction.main so it accepts 2 arguments
+// 2. Create a new gradle tasks that accepts two arguments and 
+//    can be called as: gradle runFrac -Pdenom=4 -Pnum=3 or as gradle runFrac -Pnum=3 -Pdenom=4 , also make sure it can run with only 1 or no arguments
+
+// Example how you can add that libraries can be pulled from mavenCentral()
+// repositories {
+//   mavenCentral()
+// }
+
+// Setting dependencies, e.g. when you import JSON in your Java files
+// dependencies{
+//   implementation 'org.json:json:20171018'
+// }
