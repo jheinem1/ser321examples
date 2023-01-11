@@ -65,3 +65,25 @@ task runFraction(type: JavaExec) {
 // dependencies{
 //   implementation 'org.json:json:20171018'
 // }
+
+// task that runs the Fraction Main which does use arguments: gradle runFractionWithArgs -Pdenom=4 -Pnum=3
+task runFractionWithArgs(type: JavaExec) {
+  group 'Fraction Tasks'
+  description 'Tasks which runs Fraction with arguments'
+
+  classpath = sourceSets.main.runtimeClasspath
+
+  main = 'Fraction'
+
+  // works with any number of arguments
+  if (project.hasProperty("num")) {
+    args(project.getProperty('num'));
+  } else {
+    args(1);
+  }
+  if (project.hasProperty("denom")) {
+    args(project.getProperty('denom'));
+  } else {
+    args(3);
+  }
+}
