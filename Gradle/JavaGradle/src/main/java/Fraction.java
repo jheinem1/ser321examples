@@ -48,10 +48,11 @@ public class Fraction {
             // get the values from the command line
             try {
                numerator = Integer.parseInt(args[0]);
-            } catch (Exception e) { } // do nothing, use default
-            try {
                denominator = Integer.parseInt(args[1]);
-            } catch (Exception e) { } // do nothing, use default
+            } catch (NumberFormatException e) {
+               System.out.println("Arguments: " + args[0] + ", " + args[1] + " must be integers.");
+               System.exit(1);
+            }
          }
 
 
