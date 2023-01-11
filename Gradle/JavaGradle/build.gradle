@@ -32,14 +32,6 @@ task runAppAgain(type: JavaExec) {
 
   main = 'Multiply'
 
-  // only works if two arguments are provided
-  // Try: using default values in case non or only one parameter is provided
-  // if (project.hasProperty("num1") && project.hasProperty("num2")) {
-  //   args(project.getProperty('num1'), project.getProperty('num2'));
-  // } else if (project.hasProperty("num1")){
-  //   args(project.getProperty('num1'), 1);
-  // }
-
   // works with any number of arguments
   if (project.hasProperty("num1")) {
     args(project.getProperty('num1'));
