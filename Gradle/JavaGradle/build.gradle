@@ -91,3 +91,8 @@ task runFractionWithArgs(type: JavaExec) {
     args(3);
   }
 }
+
+// alias for runFractionWithArgs to make it easier to run
+task runFrac() {
+  dependsOn runFractionWithArgs
+}
