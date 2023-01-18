@@ -1,0 +1,15 @@
+{
+    "build": {
+        "dockerfile": ".dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "GitHub.copilot",
+                "eamodio.gitlens",
+                "vscjava.vscode-java-pack",
+                "richardwillis.vscode-gradle-extension-pack"
+            ]
+        }
+    }
+}
