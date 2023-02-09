@@ -1,6 +1,11 @@
 // set as java application
 apply plugin: 'application'
 
+// add dependencies
+repositories {
+  mavenCentral()
+}
+
 //define main class
 mainClassName = 'SimpleServer'
 
@@ -22,6 +27,10 @@ task FunWebServer(type: JavaExec) {
 
   main = 'funHttpServer.WebServer'
   standardInput = System.in
+}
+
+dependencies {
+  implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 

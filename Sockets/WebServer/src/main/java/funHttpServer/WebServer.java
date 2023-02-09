@@ -16,6 +16,10 @@ write a response back
 
 package funHttpServer;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import netscape.javascript.JSObject;
+
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -240,17 +244,42 @@ class WebServer {
           //     "/repos/OWNERNAME/REPONAME/contributors"
 
           Map<String, String> query_pairs = new LinkedHashMap<String, String>();
-          query_pairs = splitQuery(request.replace("github?", ""));
-          String json = fetchURL("https://api.github.com/" + query_pairs.get("query"));
-          System.out.println(json);
+          try {
+            // extract path parameters
+            query_pairs = splitQuery(request.replace("github?", ""));
+          } catch (UnsupportedEncodingException e) {
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Bad Request: Malformed Arguments");
+          }
+          String json = null;
+          try {
+            json = fetchURL("https://api.github.com/" + query_pairs.get("query"));
 
-          builder.append("HTTP/1.1 200 OK\n");
-          builder.append("Content-Type: text/html; charset=utf-8\n");
-          builder.append("\n");
-          builder.append("Check the todos mentioned in the Java source file");
-          // TODO: Parse the JSON returned by your fetch and create an appropriate
-          // response based on what the assignment document asks for
+            Gson gson = new Gson();
+            Repository[] repos = gson.fromJson(json, Repository[].class);
 
+            builder.append("HTTP/1.1 200 OK\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            // display the results as a table
+            builder.append("<table>");
+            builder.append("<tr><th>Name</th><th>Description</th><th>URL</th></tr>");
+            for (Repository repo : repos) {
+              builder.append("<tr>");
+              builder.append("<td>").append(repo.name).append("</td>");
+              builder.append("<td>").append(repo.description).append("</td>");
+              builder.append("<td>").append(repo.url).append("</td>");
+              builder.append("</tr>");
+            }
+            builder.append("</table>");
+          } catch (URLFetchException e) {
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Bad Request: Invalid or missing query, query is required");
+          }
         } else {
           // if the request is not recognized at all
 
@@ -348,7 +377,7 @@ class WebServer {
    * @return the String result of the http request.
    *
    **/
-  public String fetchURL(String aUrl) {
+  public String fetchURL(String aUrl) throws URLFetchException {
     StringBuilder sb = new StringBuilder();
     URLConnection conn = null;
     InputStreamReader in = null;
@@ -371,8 +400,20 @@ class WebServer {
       }
       in.close();
     } catch (Exception ex) {
-      System.out.println("Exception in url request:" + ex.getMessage());
+      throw new URLFetchException("Exception while fetching url: " + aUrl);
     }
     return sb.toString();
   }
+}
+
+class URLFetchException extends Exception {
+  public URLFetchException(String message) {
+    super(message);
+  }
+}
+
+class Repository {
+    public String name;
+    public String description;
+    public String url;
 }
