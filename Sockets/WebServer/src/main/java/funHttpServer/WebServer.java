@@ -37,6 +37,7 @@ class WebServer {
 
   /**
    * Main thread
+   * 
    * @param port to listen on
    */
   public WebServer(int port) {
@@ -86,6 +87,7 @@ class WebServer {
 
   /**
    * Reads in socket stream and generates a response
+   * 
    * @param inStream HTTP input stream from socket
    * @return the byte encoded HTTP response
    */
@@ -233,15 +235,15 @@ class WebServer {
             builder.append("Bad Request: Invalid or missing number<s>, num1 and num2 are required");
           }
 
-
         } else if (request.contains("github?")) {
           // pulls the query from the request and runs it with GitHub's REST API
           // check out https://docs.github.com/rest/reference/
           //
           // HINT: REST is organized by nesting topics. Figure out the biggest one first,
-          //     then drill down to what you care about
-          // "Owner's repo is named RepoName. Example: find RepoName's contributors" translates to
-          //     "/repos/OWNERNAME/REPONAME/contributors"
+          // then drill down to what you care about
+          // "Owner's repo is named RepoName. Example: find RepoName's contributors"
+          // translates to
+          // "/repos/OWNERNAME/REPONAME/contributors"
 
           Map<String, String> query_pairs = new LinkedHashMap<String, String>();
           try {
@@ -302,6 +304,7 @@ class WebServer {
 
   /**
    * Method to read in a query and split it up correctly
+   * 
    * @param query parameters on path
    * @return Map of all parameters and their specific values
    * @throws UnsupportedEncodingException If the URLs aren't encoded with UTF-8
@@ -322,6 +325,7 @@ class WebServer {
 
   /**
    * Builds an HTML file list from the www directory
+   * 
    * @return HTML string output of file list
    */
   public static String buildFileList() {
@@ -413,7 +417,7 @@ class URLFetchException extends Exception {
 }
 
 class Repository {
-    public String name;
-    public String description;
-    public String url;
+  public String name;
+  public String description;
+  public String url;
 }
