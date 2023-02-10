@@ -17,22 +17,20 @@ write a response back
 package funHttpServer;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import netscape.javascript.JSObject;
-
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 import java.util.Map;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.nio.charset.Charset;
 
 class WebServer {
-  LinkedList<String> usernames = new LinkedList<>();
+  Set<String> usernames = new HashSet<>();
 
   public static void main(String args[]) {
     WebServer server = new WebServer(9000);
