@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.nio.charset.Charset;
 
 class WebServer {
@@ -282,8 +283,78 @@ class WebServer {
             builder.append("\n");
             builder.append("Bad Request: Invalid or missing query, query is required");
           }
+        } else if (request.contains("add-username?")) {
+          // This adds a valid github username to the list of user in a JSONBin
+          //
+          // Example: .../add-username?username=USERNAME
+
+          Map<String, String> query_pairs = new LinkedHashMap<String, String>();
+          try {
+            // extract path parameters
+            query_pairs = splitQuery(request.replace("add-username?", ""));
+          } catch (UnsupportedEncodingException e) {
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Bad Request: Malformed Arguments");
+          }
+
+          // extract required fields from parameters
+          try {
+            String username = query_pairs.get("username");
+
+            // determine if the username is valid
+            // this will return { "message": "Not Found", "documentation_url":
+            // "https://docs.github.com/rest" } if the username is not found
+            String json = fetchURL("https://api.github.com/users/" + username);
+            // simple pattern matching to determine if the username is valid
+            if (json.contains("Not Found")) {
+              builder.append("HTTP/1.1 400 Bad Request");
+              builder.append("Content-Type: text/html; charset=utf-8\n");
+              builder.append("\n");
+              builder.append("Bad Request: Invalid username");
+            } else {
+              String binId = "63e58ac5c0e7653a05738e61";
+              try {
+                // attempt to add the username to the JSONBin
+                putInJSONBin(binId, username);
+                builder.append("HTTP/1.1 200 OK");
+                builder.append("Content-Type: text/html; charset=utf-8\n");
+                builder.append("\n");
+                builder.append("Username added to JSONBin");
+              } catch (URLPutException e) {
+                builder.append("HTTP/1.1 500 Internal Server Error");
+                builder.append("Content-Type: text/html; charset=utf-8\n");
+                builder.append("\n");
+                builder.append("Internal Server Error: Unable to add username to JSONBin");
+              }
+            }
+          } catch (URLFetchException e) {
+            builder.append("HTTP/1.1 500 Internal Server Error");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Internal Server Error: Unable to validate username");
+          }
+        } else if (request.contains("get-usernames")) {
+          // This gets all the usernames from the JSONBin
+          //
+          // Example: .../get-usernames
+
+          String binId = "63e58ac5c0e7653a05738e61";
+          try {
+            // attempt to get the usernames from the JSONBin
+            String json = getFromJSONBin(binId);
+            builder.append("HTTP/1.1 200 OK");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append(json);
+          } catch (URLFetchException e) {
+            builder.append("HTTP/1.1 500 Internal Server Error");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Internal Server Error: Unable to get usernames from JSONBin");
+          }
         } else {
-          // if the request is not recognized at all
 
           builder.append("HTTP/1.1 400 Bad Request\n");
           builder.append("Content-Type: text/html; charset=utf-8\n");
@@ -408,10 +479,51 @@ class WebServer {
     }
     return sb.toString();
   }
+
+  /**
+   * Adds an element to a JSONBin
+   * 
+   * @param binId   the id of the JSONBin
+   * @param element the element to add to the JSONBin
+   * @throws Exception
+   */
+  public void putInJSONBin(String binId, String element) throws URLPutException {
+    URLConnection conn = null;
+    OutputStreamWriter out = null;
+    try {
+      URL url = new URL("https://api.jsonbin.io/b/" + binId);
+      conn = url.openConnection();
+      if (conn != null)
+        conn.setReadTimeout(20 * 1000); // timeout in 20 seconds
+      if (conn != null && conn.getInputStream() != null) {
+        out = new OutputStreamWriter(conn.getOutputStream(), Charset.defaultCharset());
+        out.write(element);
+        out.close();
+      }
+    } catch (Exception ex) {
+      throw new URLPutException("Exception while adding to JSONBin: " + binId);
+    }
+  }
+
+  /**
+   * Gets an array of strings from a JSONBin
+   * 
+   * @param binId the id of the JSONBin
+   * @return a json array of strings
+   */
+  public String getFromJSONBin(String binId) throws URLFetchException {
+    return fetchURL("https://api.jsonbin.io/b/" + binId + "/latest?meta=false");
+  }
 }
 
 class URLFetchException extends Exception {
   public URLFetchException(String message) {
+    super(message);
+  }
+}
+
+class URLPutException extends Exception {
+  public URLPutException(String message) {
     super(message);
   }
 }
