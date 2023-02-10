@@ -276,10 +276,10 @@ class WebServer {
               }
               builder.append("</table>");
             } catch (URLFetchException e) {
-              builder.append("HTTP/1.1 400 Bad Request\n");
+              builder.append("HTTP/1.1 500 Internal Server Error");
               builder.append("Content-Type: text/html; charset=utf-8\n");
               builder.append("\n");
-              builder.append("Bad Request: Invalid or missing query, query is required");
+              builder.append("Unable to fetch content from GitHub");
             }
           } catch (Exception e) {
             builder.append("HTTP/1.1 400 Bad Request\n");
