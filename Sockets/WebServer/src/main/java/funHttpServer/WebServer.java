@@ -306,6 +306,7 @@ class WebServer {
               String json = fetchURL("https://api.github.com/users/" + username);
               // simple pattern matching to determine if the username is valid
               if (json.contains("Not Found")) {
+                // this shouldn't run, but if it does, it means the username is invalid
                 builder.append("HTTP/1.1 400 Bad Request");
                 builder.append("Content-Type: text/html; charset=utf-8\n");
                 builder.append("\n");
@@ -318,10 +319,10 @@ class WebServer {
                 builder.append("Username added successfully");
               }
             } catch (URLFetchException e) {
-              builder.append("HTTP/1.1 500 Internal Server Error");
+              builder.append("HTTP/1.1 400 Bad Request");
               builder.append("Content-Type: text/html; charset=utf-8\n");
               builder.append("\n");
-              builder.append("Internal Server Error: Unable to validate username");
+              builder.append("Bad Request: Invalid username");
             }
           } catch (Exception e) {
             builder.append("HTTP/1.1 400 Bad Request\n");
